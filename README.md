@@ -1,6 +1,6 @@
 # clock
-This is just a smaller version of jpetazzo/clock.
+Simple beacon, based on jpetazzo/clock.  Made the beacon a script so I can take an argument instead of just having a fixed interval.  
 
-This container just displays the time every second.
-This container will run forever.
-To stop it, press ^C.
+docker run -it --rm pvnovarese/clock:latest [INTERVAL] 
+
+Default INTERVAL is 1 (second).
