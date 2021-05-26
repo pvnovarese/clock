@@ -54,6 +54,3 @@ volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
-  - name: toolbox
-    host:
-      path: /usr/local/bin
