@@ -11,7 +11,6 @@ steps:
       - cat /etc/os-release
       - ls /usr/local/bin
       - ls /
-      - ls /toolbox
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
@@ -20,3 +19,6 @@ volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
+  - name: toolbox
+    host:
+      path: /usr/local/bin
