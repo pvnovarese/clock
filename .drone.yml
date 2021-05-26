@@ -45,6 +45,13 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
+  - name: Cleanup
+    image: docker
+    commands:
+      - docker rm $DRONE_REPO:$DRONE_BUILD_NUMBER
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
 
 
 volumes:
