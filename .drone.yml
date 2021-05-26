@@ -30,8 +30,6 @@ steps:
       - docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli anchore-cli image add $DRONE_REPO:$DRONE_BUILD_NUMBER
       - docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli anchore-cli image wait $DRONE_REPO:$DRONE_BUILD_NUMBER
       - docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli anchore-cli evaluate check $DRONE_REPO:$DRONE_BUILD_NUMBER
-      - docker tag $DRONE_REPO:$DRONE_BUILD_NUMBER $DRONE_REPO:prod
-      - docker push $DRONE_REPO:prod
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
