@@ -15,13 +15,8 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: usr_local_bin
-        path: /usr/local/bin
 
 volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
-  - name: usr_local_bin
-    host:
-      path: /usr/local/bin
