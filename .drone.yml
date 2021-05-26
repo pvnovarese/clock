@@ -10,13 +10,20 @@ steps:
       - cat /etc/hostname
       - cat /etc/os-release
       - ls /usr/local/bin
-      - /usr/local/bin/syft pvnovarese/clock:test-1
-      - /usr/local/bin/grype pvnovarese/clock:test-1
+      - ls /
+      - ls /toolbox
+      - /toolbox/syft pvnovarese/clock:test-1
+      - /toolbox/grype pvnovarese/clock:test-1
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
+      - name: toolbox:
+        path: /toolbox
 
 volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
+  - name: toolbox
+    host:
+      path: /usr/local/bin
