@@ -7,6 +7,8 @@ steps:
     image: docker
     commands:
       - docker build -t pvnovarese/clock:test-1 .
+      - syft pvnovarese/clock:test-1
+      - grype pvnovarese/clock:test-1
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
