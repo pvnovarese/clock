@@ -35,7 +35,18 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-
+  - name: Promote image
+    image: docker
+    environment:
+      PASSWORD:
+        from_secret: hub_password
+    commands:
+      - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
+      - docker tag $DRONE_REPO:$DRONE_BUILD_NUMBER $DRONE_REPO:prod
+      - docker push $DRONE_REPO:prod
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
 
 
 volumes:
