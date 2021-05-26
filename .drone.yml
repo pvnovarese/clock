@@ -20,12 +20,7 @@ steps:
       - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
       - /toolbox/syft $DRONE_REPO:$DRONE_BUILD_NUMBER
       - /toolbox/grype $DRONE_REPO:$DRONE_BUILD_NUMBER
-      - apk update 
-      - apk add --no-cache python3
-      - python3 -m ensurepip
-      - pip3 install --upgrade anchorecli
-      - ls -l /toolbox
-      - /usr/local/bin/anchore-cli -h
+      - docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli anchore-cli system status
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
