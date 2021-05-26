@@ -12,8 +12,6 @@ steps:
       - ls /usr/local/bin
       - ls /
       - ls /toolbox
-      - /toolbox/syft pvnovarese/clock:test-1
-      - /toolbox/grype pvnovarese/clock:test-1
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
