@@ -8,6 +8,18 @@ steps:
     environment:
       PASSWORD:
         from_secret: hub_password
+    commands:
+      - docker build -t $DRONE_REPO:$DRONE_BUILD_NUMBER .
+      - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
+      - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+      - name: toolbox
+        path: /toolbox
+  - name: Scan image
+    image: docker
+    environment: 
       ANCHORE_CLI_USER:
         from_secret: anchore_cli_user
       ANCHORE_CLI_PASS:
@@ -15,11 +27,6 @@ steps:
       ANCHORE_CLI_URL:
         from_secret: anchore_cli_url
     commands:
-      - docker build -t $DRONE_REPO:$DRONE_BUILD_NUMBER .
-      - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
-      - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
-      - /toolbox/syft $DRONE_REPO:$DRONE_BUILD_NUMBER
-      - /toolbox/grype $DRONE_REPO:$DRONE_BUILD_NUMBER
       - docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli anchore-cli image add $DRONE_REPO:$DRONE_BUILD_NUMBER
       - docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli anchore-cli image wait $DRONE_REPO:$DRONE_BUILD_NUMBER
       - docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli anchore-cli evaluate check $DRONE_REPO:$DRONE_BUILD_NUMBER
@@ -28,8 +35,8 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: toolbox
-        path: /toolbox
+
+
 
 volumes:
   - name: docker_sock
