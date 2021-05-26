@@ -5,10 +5,16 @@ name: Build
 steps:
   - name: Build image
     image: docker
+    environment:
+      USERNAME:
+        from_secret: hub_user
+      PASSWORD:
+        from_secret: hub_password
     commands:
       - docker build -t pvnovarese/clock:test-1 .
-      - syft pvnovarese/clock:test-1
-      - grype pvnovarese/clock:test-1
+      - docker login -u $USERNAME -p $PASSWORD
+      - /toolbox/syft pvnovarese/clock:test-1
+      - /toolbox/grype pvnovarese/clock:test-1
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
