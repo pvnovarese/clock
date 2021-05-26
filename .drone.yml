@@ -20,7 +20,7 @@ steps:
       - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
       - /toolbox/syft $DRONE_REPO:$DRONE_BUILD_NUMBER
       - /toolbox/grype $DRONE_REPO:$DRONE_BUILD_NUMBER
-      - /toolbox/anchore-cli system status
+      - ls -l /toolbox
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
