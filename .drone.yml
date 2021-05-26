@@ -7,6 +7,9 @@ steps:
     image: docker
     commands:
       - docker build -t pvnovarese/clock:test-1 .
+      - cat /etc/hostname
+      - cat /etc/os-release
+      - ls /usr/local/bin
       - /usr/local/bin/syft pvnovarese/clock:test-1
       - /usr/local/bin/grype pvnovarese/clock:test-1
     volumes:
