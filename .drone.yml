@@ -21,6 +21,7 @@ steps:
       - /toolbox/syft $DRONE_REPO:$DRONE_BUILD_NUMBER
       - /toolbox/grype $DRONE_REPO:$DRONE_BUILD_NUMBER
       - ls -l /toolbox
+      - /toolbox/anchore-cli -h
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
