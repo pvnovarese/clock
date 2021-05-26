@@ -11,7 +11,7 @@ steps:
       PASSWORD:
         from_secret: hub_password
     commands:
-      - docker build -t pvnovarese/clock:test-1 .
+      - docker build -t $USERNAME/clock:$DRONE_BUILD_NUMBER .
       - docker login -u $USERNAME -p $PASSWORD
       - /toolbox/syft pvnovarese/clock:test-1
       - /toolbox/grype pvnovarese/clock:test-1
