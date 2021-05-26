@@ -6,20 +6,14 @@ steps:
   - name: Build image
     image: docker
     environment:
-      USERNAME:
-        from_secret: hub_user
       PASSWORD:
         from_secret: hub_password
     commands:
-      - docker build -t $USERNAME/clock:$DRONE_BUILD_NUMBER .
-      - docker login -u $USERNAME -p $PASSWORD
-      - docker push $USERNAME/clock:$DRONE_BUILD_NUMBER
-      - /toolbox/syft $USERNAME/clock:$DRONE_BUILD_NUMBER
-      - /toolbox/grype $USERNAME/clock:$DRONE_BUILD_NUMBER
-      - echo $DRONE_REPO
-      - echo $DRONE_REPO_NAME
-      - echo $DRONE_REPO_NAMESPACE
-      - echo $DRONE_REPO_OWNER
+      - docker build -t $DRONE_REPO:$DRONE_BUILD_NUMBER .
+      - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
+      - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
+      - /toolbox/syft $DRONE_REPO:$DRONE_BUILD_NUMBER
+      - /toolbox/grype $DRONE_REPO:$DRONE_BUILD_NUMBER
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
