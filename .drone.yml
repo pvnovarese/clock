@@ -8,12 +8,19 @@ steps:
     environment:
       PASSWORD:
         from_secret: hub_password
+      ANCHORE_CLI_USER:
+        from_secret: anchore_cli_user
+      ANCHORE_CLI_PASS:
+        from_secret: anchore_cli_pass
+      ANCHORE_CLI_URL:
+        from_secret: anchore_cli_url
     commands:
       - docker build -t $DRONE_REPO:$DRONE_BUILD_NUMBER .
       - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
       - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
       - /toolbox/syft $DRONE_REPO:$DRONE_BUILD_NUMBER
       - /toolbox/grype $DRONE_REPO:$DRONE_BUILD_NUMBER
+      - /toolbox/anchore-cli system status
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
