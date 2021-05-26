@@ -12,11 +12,3 @@ steps:
   commands:
   - echo "building"
   - docker build -t pvnovarese/clock:test-1 .
-- name: scan
-  commands:
-  - echo "scanning"
-  - syft pvnovarese/clock:test-1
-  - grype pvnovarese/clock:test-1
-- name: push
-  commands:
-  - echo "do a docker push here once we figure out how to use secrets with drone"
