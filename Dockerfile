@@ -20,6 +20,9 @@ while : \n\
  done \n'  >>  /beacon.sh && \
  chmod 0755 /beacon.sh
 
+## just to make sure we have a unique build each time
+RUN date > /image_build_timestamp
+
 USER 65534:65534
 #OLD beacon was just a simple one-liner:
 #ENTRYPOINT while : \ ; do date; sleep 1; done
