@@ -2,6 +2,12 @@
 kind: pipeline
 name: Build
 
+trigger:
+  branch:
+  - master
+  event:
+  - push
+
 steps:
   - name: Build image
     image: docker
