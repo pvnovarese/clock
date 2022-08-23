@@ -16,6 +16,7 @@ steps:
         from_secret: hub_password
     commands:
       - docker build -t $DRONE_REPO:$DRONE_BUILD_NUMBER .
+      # need to update this docker login 
       - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
       - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
     volumes:
