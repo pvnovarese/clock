@@ -59,10 +59,30 @@ steps:
         from_secret: hub_password
     commands:
       - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
-      - IMAGE_PROD="{DRONE_REPO}:${DRONE_BRANCH}"
+      - IMAGE_PROD="${DRONE_REPO}:${DRONE_BRANCH}"
       - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
       - docker tag $${IMAGE} $${IMAGE_PROD}
       - docker push $${IMAGE_PROD}
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+        
+  - name: Scan Promoted Image
+    # using my anchore-tools until anchorectl 1.0.0 ships
+    image: docker.io/pvnovarese/anchore-tools:main
+    environment: 
+      ANCHORECTL_USERNAME:
+        from_secret: anchorectl_username
+      ANCHORECTL_PASSWORD:
+        from_secret: anchorectl_password
+      ANCHORECTL_URL:
+        from_secret: anchorectl_url
+    commands:
+      - IMAGE_PROD="${DRONE_REPO}:${DRONE_BRANCH}"
+      # add image to queue, pass actual dockerfile
+      # this time we don't need to wait for the scan to complete and we don't need to check the result
+      # just add the image to the queue and move on
+      - anchorectl image add --force --no-auto-subscribe --annotation build_tool=drone --dockerfile ./Dockerfile $${IMAGE_PROD}
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
