@@ -15,6 +15,7 @@ steps:
       PASSWORD:
         from_secret: hub_password
     commands:
+      # note that in this case $DRONE_REPO only works because my github username and my docker hub username are the same
       - docker build -t $DRONE_REPO:$DRONE_BUILD_NUMBER .
       # need to update this docker login 
       - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
@@ -27,16 +28,22 @@ steps:
     # using my anchore-tools until anchorectl 1.0.0 ships
     image: docker.io/pvnovarese/anchore-tools:main
     environment: 
-      ANCHORE_CLI_USER:
-        from_secret: anchore_cli_user
-      ANCHORE_CLI_PASS:
-        from_secret: anchore_cli_pass
-      ANCHORE_CLI_URL:
-        from_secret: anchore_cli_url
+      ANCHORECTL_USERNAME:
+        from_secret: anchorectl_username
+      ANCHORECTL_PASSWORD:
+        from_secret: anchorectl_password
+      ANCHORECTL_URL:
+        from_secret: anchorectl_url
     commands:
-      - anchore-cli image add $DRONE_REPO:$DRONE_BUILD_NUMBER 
-      - anchore-cli image wait $DRONE_REPO:$DRONE_BUILD_NUMBER 
-      - anchore-cli evaluate check $DRONE_REPO:$DRONE_BUILD_NUMBER
+      # add image to queue, pass actual dockerfile, then wait for results
+      - anchorectl image add --force --no-auto-subscribe --wait --annotation build_tool=drone --dockerfile ./Dockerfile ${DRONE_REPO}:${DRONE_BUILD_NUMBER}
+      # check evaluation and break the pipeline if the result is FAIL/STOP
+      - anchorectl image check --fail-based-on-results --detail ${DRONE_REPO}:${DRONE_BUILD_NUMBER}
+      #
+      # older anchore-cli commands (this is deprecated but might be useful for troubleshooting)
+      #- anchore-cli image add $DRONE_REPO:$DRONE_BUILD_NUMBER 
+      #- anchore-cli image wait $DRONE_REPO:$DRONE_BUILD_NUMBER 
+      #- anchore-cli evaluate check $DRONE_REPO:$DRONE_BUILD_NUMBER
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
