@@ -23,6 +23,7 @@ steps:
         path: /var/run/docker.sock
         
   - name: Scan image
+    # using my anchore-tools until anchorectl 1.0.0 ships
     image: docker.io/pvnovarese/anchore-tools:main
     environment: 
       ANCHORE_CLI_USER:
