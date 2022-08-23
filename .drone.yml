@@ -21,9 +21,8 @@ steps:
       # old version: DRONE_REPO:$DRONE_BUILD_NUMBER
       # note that in this case $DRONE_REPO only works because my github username and my docker hub username are the same
       - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
-      - docker build -t $${IMAGE} .
-      # need to update this docker login 
-      - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
+      - docker build --pull --no-cache -t $${IMAGE} .
+      - echo "$${PASSWORD}" | docker login -u $$DRONE_REPO_NAMESPACE --password-stdin
       - docker push $${IMAGE}
     volumes:
       - name: docker_sock
@@ -64,7 +63,7 @@ steps:
     commands:
       - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
       - IMAGE_PROD="${DRONE_REPO}:${DRONE_BRANCH}"
-      - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
+      - echo "$${PASSWORD}" | docker login -u $$DRONE_REPO_NAMESPACE --password-stdin
       - docker tag $${IMAGE} $${IMAGE_PROD}
       - docker push $${IMAGE_PROD}
     volumes:
