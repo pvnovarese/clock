@@ -21,8 +21,9 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
+        
   - name: Scan image
-    image: docker
+    image: docker.io/pvnovarese/anchore-tools:latest
     environment: 
       ANCHORE_CLI_USER:
         from_secret: anchore_cli_user
@@ -31,10 +32,13 @@ steps:
       ANCHORE_CLI_URL:
         from_secret: anchore_cli_url
     commands:
-      - docker run --rm -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli sh -c "anchore-cli image add $DRONE_REPO:$DRONE_BUILD_NUMBER && anchore-cli image wait $DRONE_REPO:$DRONE_BUILD_NUMBER && anchore-cli evaluate check $DRONE_REPO:$DRONE_BUILD_NUMBER"
+      - anchore-cli image add $DRONE_REPO:$DRONE_BUILD_NUMBER 
+      - anchore-cli image wait $DRONE_REPO:$DRONE_BUILD_NUMBER 
+      - anchore-cli evaluate check $DRONE_REPO:$DRONE_BUILD_NUMBER
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
+        
   - name: Promote image
     image: docker
     environment:
@@ -47,6 +51,7 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
+        
   - name: Cleanup
     image: docker
     commands:
