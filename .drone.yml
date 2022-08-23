@@ -23,7 +23,7 @@ steps:
         path: /var/run/docker.sock
         
   - name: Scan image
-    image: docker.io/pvnovarese/anchore-tools:latest
+    image: docker.io/pvnovarese/anchore-tools:main
     environment: 
       ANCHORE_CLI_USER:
         from_secret: anchore_cli_user
