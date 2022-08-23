@@ -9,7 +9,9 @@ trigger:
   - push
 
 steps:
-  - name: Build image
+
+  - name: Build Image
+    # standard docker build and push
     image: docker
     environment:
       PASSWORD:
@@ -27,7 +29,8 @@ steps:
       - name: docker_sock
         path: /var/run/docker.sock
         
-  - name: Scan image
+  - name: Scan Image
+    # submit image to Anchore for scanning, and optionally break pipeline based on results
     # using my anchore-tools until anchorectl 1.0.0 ships
     image: docker.io/pvnovarese/anchore-tools:main
     environment: 
@@ -52,7 +55,8 @@ steps:
       - name: docker_sock
         path: /var/run/docker.sock
         
-  - name: Promote image
+  - name: Promote Image
+    # now that it has passed our checks, re-tag the image for production and push to registry
     image: docker
     environment:
       PASSWORD:
@@ -68,6 +72,7 @@ steps:
         path: /var/run/docker.sock
         
   - name: Scan Promoted Image
+    # add the newly promoted image tag to Anchore's catalog
     # using my anchore-tools until anchorectl 1.0.0 ships
     image: docker.io/pvnovarese/anchore-tools:main
     environment: 
@@ -88,10 +93,16 @@ steps:
         path: /var/run/docker.sock
         
   - name: Cleanup
+    # just deleting the image tags we used to keep things tidy
     image: docker
+    # I want to run this step regardless of whether the pipeline broke or not
+    when:
+      status:
+      - failure
+      - success
     commands:
       - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
-      - IMAGE_PROD="{DRONE_REPO}:${DRONE_BRANCH}"
+      - IMAGE_PROD="${DRONE_REPO}:${DRONE_BRANCH}"
       - docker image rm $${IMAGE} $${IMAGE_PROD}
     volumes:
       - name: docker_sock
