@@ -15,11 +15,14 @@ steps:
       PASSWORD:
         from_secret: hub_password
     commands:
+      # set the image name/tag:  
+      # old version: DRONE_REPO:$DRONE_BUILD_NUMBER
       # note that in this case $DRONE_REPO only works because my github username and my docker hub username are the same
-      - docker build -t $DRONE_REPO:$DRONE_BUILD_NUMBER .
+      - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
+      - docker build -t $${IMAGE} .
       # need to update this docker login 
       - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
-      - docker push $DRONE_REPO:$DRONE_BUILD_NUMBER
+      - docker push $${IMAGE}
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
@@ -35,10 +38,11 @@ steps:
       ANCHORECTL_URL:
         from_secret: anchorectl_url
     commands:
+      - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
       # add image to queue, pass actual dockerfile, then wait for results
-      - anchorectl image add --force --no-auto-subscribe --wait --annotation build_tool=drone --dockerfile ./Dockerfile ${DRONE_REPO}:${DRONE_BUILD_NUMBER}
+      - anchorectl image add --force --no-auto-subscribe --wait --annotation build_tool=drone --dockerfile ./Dockerfile $${IMAGE}
       # check evaluation and break the pipeline if the result is FAIL/STOP
-      - anchorectl image check --fail-based-on-results --detail ${DRONE_REPO}:${DRONE_BUILD_NUMBER}
+      - anchorectl image check --fail-based-on-results --detail $${IMAGE}
       #
       # older anchore-cli commands (this is deprecated but might be useful for troubleshooting)
       #- anchore-cli image add $DRONE_REPO:$DRONE_BUILD_NUMBER 
@@ -54,9 +58,11 @@ steps:
       PASSWORD:
         from_secret: hub_password
     commands:
+      - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
+      - IMAGE_PROD="{DRONE_REPO}:${DRONE_BRANCH}"
       - docker login -u $$DRONE_REPO_NAMESPACE -p $PASSWORD
-      - docker tag $DRONE_REPO:$DRONE_BUILD_NUMBER $DRONE_REPO:prod
-      - docker push $DRONE_REPO:prod
+      - docker tag $${IMAGE} $${IMAGE_PROD}
+      - docker push $${IMAGE_PROD}
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
@@ -64,7 +70,9 @@ steps:
   - name: Cleanup
     image: docker
     commands:
-      - docker image rm $DRONE_REPO:$DRONE_BUILD_NUMBER
+      - IMAGE="${DRONE_REPO}:${DRONE_BRANCH}-dev"
+      - IMAGE_PROD="{DRONE_REPO}:${DRONE_BRANCH}"
+      - docker image rm $${IMAGE} $${IMAGE_PROD}
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
